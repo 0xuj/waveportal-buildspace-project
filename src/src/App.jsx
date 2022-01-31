@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import logo from './logo.svg'
 import {ethers} from 'ethers';
-import abi from "./utils/WavePortal.json";
+import abi from "./utils/WebPortal.json";
 function App() {
 
   const [currentAccount,setCurrentAccount] = useState("");
