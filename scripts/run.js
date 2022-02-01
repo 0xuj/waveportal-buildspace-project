@@ -1,5 +1,5 @@
 const main = async () => {
-  const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
+  const waveContractFactory = await hre.ethers.getContractFactory("WebPortal");
   const waveContract = await waveContractFactory.deploy({
     value: hre.ethers.utils.parseEther("0.1"),
   });

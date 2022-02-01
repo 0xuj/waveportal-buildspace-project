@@ -26,20 +26,31 @@ contract WebPortal {
     }
 
     function wave(string memory _message) public {
-        totalWaves++;
-        console.log("%s, has waved w/ message %s", msg.sender, _message);
+        require(
+            lastWavedAt[msg.sender] + 30 seconds < block.timestamp,
+            "Wait 30sec"
+        );
+
+        lastWavedAt[msg.sender] = block.timestamp;
+
+        totalWaves += 1;
+        console.log("%s has waved!", msg.sender);
+
         waves.push(Wave(msg.sender, _message, block.timestamp));
 
-        seed = (block.timestamp + block.difficulty + seed) % 100;
-        console.log("Random # generated: %d", seed);
+        uint256 randomNumber = (block.difficulty + block.timestamp + seed) %
+            100;
+        console.log("Random # generated: %s", randomNumber);
 
-        if (seed <= 50) {
+        seed = randomNumber;
+
+        if (randomNumber < 50) {
             console.log("%s won!", msg.sender);
 
             uint256 prizeAmount = 0.0001 ether;
             require(
                 prizeAmount <= address(this).balance,
-                "Trying to withdraw more money than the contract has."
+                "Trying to withdraw more money than they contract has."
             );
             (bool success, ) = (msg.sender).call{value: prizeAmount}("");
             require(success, "Failed to withdraw money from contract.");

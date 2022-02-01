@@ -6,7 +6,7 @@ import abi from "./utils/WebPortal.json";
 function App() {
   const [allWaves,setAllWaves] = useState([])
   const [currentAccount,setCurrentAccount] = useState("");
-  const contaractAddress="0x9aD90cEe6ECEE99a346B8f9B3eAd78c66D5B12ea"
+  const contaractAddress="0x5ffd579511ef1E95B20922e83fFEc0E4aBEDC644"
   const contractABI = abi.abi;
 
   const getAllWaves = async () => {
@@ -20,13 +20,12 @@ function App() {
 
         const waves = await wavePortalContract.getAllWaves();
 
-        let waveCleaned = [];
-        waves.forEach(waves => {
-          waveCleaned.push({
-            address:wave.waver,
-            timestamp: new Date(wave.timestamp * 1000),
-            message:wave.message
-          })
+        let waveCleaned = waves.map(wave => {
+          return{
+            address: wave.waver,
+            timestamp: new Data(wave.timestamp * 1000),
+            message: wave.message,
+          };
         })
         setAllWaves(waveCleaned);
       } else {
@@ -51,7 +50,7 @@ function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...",count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave("this is a message")
+        const waveTxn = await wavePortalContract.wave("this is a message",{gasLimit: 300000})
 
         console.log("Mining...",waveTxn.hash);
 
@@ -108,6 +107,36 @@ function App() {
       console.log(error);
     }
   }
+
+  useEffect(() => {
+    let wavePortalContract;
+  
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message);
+      setAllWaves(prevState => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+  
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+  
+      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+      wavePortalContract.on("NewWave", onNewWave);
+    }
+  
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    };
+  }, []);
 
   useEffect(()=>{
     checkIfWalletIsConnected();
