@@ -1,30 +1,35 @@
+const main = async () => {
+  const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
+  const waveContract = await waveContractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.1"),
+  });
+  await waveContract.deployed();
+  console.log("Contract addy:", waveContract.address);
 
-const hre = require("hardhat");
+  let contractBalance = await hre.ethers.provider.getBalance(
+    waveContract.address
+  );
+  console.log(
+    "Contract balance:",
+    hre.ethers.utils.formatEther(contractBalance)
+  );
 
-async function main() {
-
-  const [owner,randomPerson] = await hre.ethers.getSigners();
-  const WebPortal = await hre.ethers.getContractFactory("WebPortal");
-  const webPortalContract = await WebPortal.deploy();
-  await webPortalContract.deployed();
-
-  console.log("Contract depoyed to:",webPortalContract.address);
-  console.log("Contract depoyed by:",owner.address);
-
-  let waveCount;
-  waveCount = await webPortalContract.getTotalWaves();
-
-  let waveTxn = await webPortalContract.wave();
+  
+  const waveTxn = await waveContract.wave("This is wave #1");
   await waveTxn.wait();
 
-  waveCount = await webPortalContract.getTotalWaves();
+  const waveTxn2 = await waveContract.wave("This is wave #2");
+  await waveTxn2.wait();
 
-  waveTxn = await webPortalContract.connect(randomPerson).wave();
-  await waveTxn.wait();
+  contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
+  console.log(
+    "Contract balance:",
+    hre.ethers.utils.formatEther(contractBalance)
+  );
 
-  console.log("webPortal deployed to:", webPortalContract.address);
-}
-
+  let allWaves = await waveContract.getAllWaves();
+  console.log(allWaves);
+};
 
 const runMain = async () => {
   try {
@@ -34,6 +39,6 @@ const runMain = async () => {
     console.log(error);
     process.exit(1);
   }
-}
+};
 
 runMain();

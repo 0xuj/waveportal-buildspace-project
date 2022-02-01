@@ -3,14 +3,10 @@ const hre = require("hardhat");
 
 async function main() {
 
-  const [deployer] = await hre.ethers.getSigners();
-  const accountBalance = await deployer.getBalance();
-
-  console.log("Deploying contract with account: ",deployer.address)
-  console.log("Account balance: ",accountBalance.toString());
-
   const WebPortal = await hre.ethers.getContractFactory("WebPortal");
-  const webPortalContract = await WebPortal.deploy();
+  const webPortalContract = await WebPortal.deploy({
+    value: hre.ethers.utils.parseEther("0.001"),
+  });
   await webPortalContract.deployed();
 
   console.log("webPortal deployed to:", webPortalContract.address);
