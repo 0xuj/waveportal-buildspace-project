@@ -6,7 +6,7 @@ import abi from "./utils/WebPortal.json";
 function App() {
   const [allWaves,setAllWaves] = useState([])
   const [currentAccount,setCurrentAccount] = useState("");
-  const contaractAddress="0x5ffd579511ef1E95B20922e83fFEc0E4aBEDC644"
+  const contractAddress="0x5ffd579511ef1E95B20922e83fFEc0E4aBEDC644"
   const contractABI = abi.abi;
 
   const getAllWaves = async () => {
@@ -20,7 +20,7 @@ function App() {
 
         const waves = await wavePortalContract.getAllWaves();
 
-        let waveCleaned = waves.map(wave => {
+        let waveCleaned = waves.map((wave) => {
           return{
             address: wave.waver,
             timestamp: new Data(wave.timestamp * 1000),
@@ -45,7 +45,7 @@ function App() {
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(contaractAddress,contractABI,signer);
+        const wavePortalContract = new ethers.Contract(contractAddress,contractABI,signer);
 
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...",count.toNumber());
@@ -155,7 +155,7 @@ function App() {
       <div className="flex flex-col  justify-center items-center min-h-screen  py-10 ">
         
         <div className=" font-semibold text-2xl m-4 text-center ">
-          This is not a starter project this is a finisher project. A project of gods.
+          Wave at your friends !!!
         </div>
         <button className=" bg-yellow-400 cursor-pointer text-black ring-0 px-3  py-2 mx-8  rounded-md font-semibold" onClick={wave}>
           Wave
